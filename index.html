@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#101827">
+    <meta name="description" content="Recall helps you study smarter with AI-powered practice questions, quizzes, and revision tools.">
+    <title>Recall — Study Smarter</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="#" aria-label="Recall home">
+            <span class="brand-icon">R</span>
+            <span>recall<span class="brand-dot">.</span></span>
+        </a>
+        <div class="header-actions">
+            <span class="status-dot"></span>
+            <span class="header-label">Your personal study space</span>
+        </div>
+    </header>
+    <main class="container">
+        <section class="hero">
+            <div class="eyebrow">YOUR LEARNING, REIMAGINED</div>
+            <h1>Learn it today.<br><span>Recall it tomorrow.</span></h1>
+            <p>Turn your notes into practice questions, test your understanding, and track your progress.</p>
+        </section>
+        <section class="stats-grid" aria-label="Study statistics">
+            <article class="stat-card">
+                <span class="stat-label">Study materials</span>
+                <strong id="materialCount">0</strong>
+                <span class="stat-note">Materials in your library</span>
+            </article>
+            <article class="stat-card">
+                <span class="stat-label">Questions answered</span>
+                <strong id="questionCount">0</strong>
+                <span class="stat-note">Across all your sessions</span>
+            </article>
+            <article class="stat-card">
+                <span class="stat-label">Average accuracy</span>
+                <strong id="accuracy">0%</strong>
+                <span class="stat-note">Your overall performance</span>
+            </article>
+        </section>
+        <section class="panel upload-panel">
+            <div class="section-heading">
+                <div>
+                    <div class="eyebrow">STEP 01</div>
+                    <h2>Add your study material</h2>
+                    <p>Start with lecture notes, textbooks, or course handouts.</p>
+                </div>
+                <span class="heading-icon" aria-hidden="true">↑</span>
+            </div>
+            <label class="upload-zone" for="fileInput">
+                <span class="upload-icon" aria-hidden="true">↥</span>
+                <strong>Choose a file to upload</strong>
+                <span>PDF, DOCX, TXT, or Markdown</span>
+                <span class="upload-button">Browse files</span>
+            </label>
+            <input
+                id="fileInput"
+                type="file"
+                accept=".pdf,.docx,.txt,.md,.markdown"
+                multiple
+                hidden
+            >
+            <div id="uploadStatus" class="notice" role="status" aria-live="polite">
+                Your library is stored in this browser on this device.
+            </div>
+        </section>
+        <section class="panel">
+            <div class="section-heading">
+                <div>
+                    <div class="eyebrow">STEP 02</div>
+                    <h2>Your study library</h2>
+                    <p>Keep your materials organised for future revision.</p>
+                </div>
+                <span class="heading-icon" aria-hidden="true">▤</span>
+            </div>
+            <div id="library" class="empty-state">
+                <span class="empty-icon" aria-hidden="true">▱</span>
+                <h3>Your library is waiting</h3>
+                <p>Upload your first study material to get started.</p>
+            </div>
+        </section>
+        <section class="panel">
+            <div class="section-heading">
+                <div>
+                    <div class="eyebrow">STEP 03</div>
+                    <h2>Practice and revise</h2>
+                    <p>Choose a material and prepare for your next examination.</p>
+                </div>
+                <span class="heading-icon" aria-hidden="true">✎</span>
+            </div>
+            <div class="form-grid">
+                <div class="field">
+                    <label for="materialSelect">Study material</label>
+                    <select id="materialSelect">
+                        <option value="">Upload material first</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="questionType">Question type</label>
+                    <select id="questionType">
+                        <option value="mcq">Multiple-choice questions</option>
+                        <option value="mixed">Mixed questions</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="questionAmount">Number of questions</label>
+                    <select id="questionAmount">
+                        <option value="5">5 questions</option>
+                        <option value="10" selected>10 questions</option>
+                        <option value="15">15 questions</option>
+                        <option value="20">20 questions</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="studyMode">Session mode</label>
+                    <select id="studyMode">
+                        <option value="practice">Practice — reveal answers</option>
+                        <option value="exam">Exam — score at the end</option>
+                    </select>
+                </div>
+            </div>
+            <button id="startButton" class="primary-button" type="button">
+                Start studying <span aria-hidden="true">→</span>
+            </button>
+            <div id="studyStatus" class="notice" role="status" aria-live="polite">
+                Your quiz controls will be available once study materials are added.
+            </div>
+            <div id="quizArea" class="quiz-area" hidden></div>
+        </section>
+        <section class="panel">
+            <div class="section-heading">
+                <div>
+                    <div class="eyebrow">YOUR JOURNEY</div>
+                    <h2>Recent study sessions</h2>
+                    <p>Review your activity and keep improving.</p>
+                </div>
+            </div>
+            <div id="history" class="empty-state">
+                <span class="empty-icon" aria-hidden="true">◷</span>
+                <h3>No sessions yet</h3>
+                <p>Your completed study sessions will appear here.</p>
+            </div>
+        </section>
+        <footer class="footer">
+            <a class="brand footer-brand" href="#">
+                <span class="brand-icon">R</span>
+                <span>recall<span class="brand-dot">.</span></span>
+            </a>
+            <p>Build understanding. Strengthen memory. Make progress.</p>
+            <span>Recall Study App</span>
+        </footer>
+    </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
