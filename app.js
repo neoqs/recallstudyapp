@@ -1,5 +1,3 @@
-“use strict”;
-
 /* ==========================================
 RECALL — STUDY APPLICATION
 Local question generation and OCR
