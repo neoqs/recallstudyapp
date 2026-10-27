@@ -51,6 +51,40 @@ function formatDate(value) {
         year: "numeric"
     });
 }
+/* ---------- OCR validation ---------- */
+function validateOCRText(text, confidence = 100) {
+    const cleanedText = String(text || "")
+        .replace(/\s+/g, " ")
+        .trim();
+    const words = cleanedText.match(/[a-zA-Z]{2,}/g) || [];
+    const letters = cleanedText.match(/[a-zA-Z]/g) || [];
+    const totalCharacters = cleanedText.length;
+    const letterRatio = totalCharacters
+        ? letters.length / totalCharacters
+        : 0;
+    const meaningfulWordRatio = words.length
+        ? words.filter((word) => word.length >= 2).length / words.length
+        : 0;
+    if (cleanedText.length < 30 || words.length < 5) {
+        throw new Error(
+            "Recall could not read enough text from this file. " +
+            "Please upload a clearer photo with the text fully visible."
+        );
+    }
+    if (letterRatio < 0.45 || meaningfulWordRatio < 0.6) {
+        throw new Error(
+            "The text in this photo appears unclear or distorted. " +
+            "Try taking a clearer photo with good lighting."
+        );
+    }
+    if (confidence < 35) {
+        throw new Error(
+            "Recall could not recognise the text confidently. " +
+            "Please upload a clearer photo."
+        );
+    }
+    return cleanedText;
+}
 /* ---------- Saving and loading ---------- */
 function loadState() {
     try {
@@ -102,7 +136,9 @@ async function recogniseImage(file) {
             }
         }
     });
-    return result.data.text || "";
+    const extractedText = result.data.text || "";
+    const confidence = Number(result.data.confidence || 0);
+    return validateOCRText(extractedText, confidence);
 }
 async function extractFileText(file) {
     const name = file.name.toLowerCase();
@@ -173,7 +209,13 @@ async function extractFileText(file) {
                 viewport: viewport
             }).promise;
             const result = await Tesseract.recognize(canvas, "eng");
-            recognisedPages.push(result.data.text || "");
+            const extractedText = result.data.text || "";
+            const confidence = Number(result.data.confidence || 0);
+            const validatedText = validateOCRText(
+                extractedText,
+                confidence
+            );
+            recognisedPages.push(validatedText);
             canvas.width = 0;
             canvas.height = 0;
         }
@@ -402,7 +444,9 @@ function generateQuestions(material, amount, preferences) {
         if (used.has(sentence)) continue;
         const keyword = chooseKeyword(sentence);
         if (!keyword) continue;
-        const type = questionTypes[questions.length % questionTypes.length];
+        const type = questionTypes[
+            questions.length % questionTypes.length
+        ];
         let question;
         if (type === "fillblank") {
             const blanked = sentence.replace(
@@ -614,7 +658,9 @@ function renderQuestion() {
                 ? writtenInput.value.trim()
                 : null;
             const button = $("revealButton");
-            if (button) button.disabled = !writtenInput.value.trim();
+            if (button) {
+                button.disabled = !writtenInput.value.trim();
+            }
         });
     }
     if ($("revealButton")) {
